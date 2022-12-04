@@ -1,0 +1,68 @@
+
+import Peer from 'peerjs';
+import {useEffect, useState} from 'react';
+
+function B() {
+	const [myPeer, setMyPeer] = useState(null);
+	const [otherPeerId, setOtherPeerId] = useState('iamb');
+	const [myConn, setMyConn] = useState(null);
+	useEffect(()=>{
+		const peer = new Peer('iama', {
+		host: 'localhost',
+		port: 9000,
+		path: '/myapp'
+		});
+		peer.on('open', function(id) {
+			console.log('My peer ID is: ' + id);
+		});
+		setMyPeer(peer);
+		const conn = peer.connect(otherPeerId);
+		setMyConn(conn);
+		conn.on('open', function() {
+	  	// Receive messages
+			conn.on('data', function(data) {
+				console.log(data);
+			});
+	
+	  		// Send messages
+	  		conn.send('Hello from a!');
+	  	});
+		peer.on('connection', function(conn) { 
+			conn.on('data', function(data) {
+				console.log(data);
+			});
+		});
+	}, []);
+
+	function test()
+	{
+		if (!myPeer || !myConn) return;
+		console.log(myConn);
+		myConn.send('Hello from a');
+		setMyConn(myPeer.connect(otherPeerId));
+		myConn.on('connection', function() {
+			// Receive messages
+			  myConn.on('data', function(data) {
+				  console.log(data);
+			  });
+	  
+				// Send messages
+				myConn.send('Hello from a!');
+			});
+		
+
+	}
+return (
+	<div>
+		<h1>I am A</h1>
+		<input id = 'ip'/>
+		<br/>
+		<button onClick = {test}>Click me</button>
+		<p>{myPeer ? myPeer.id : 'No ID'}</p>
+		{/*<p>{myConn ? (myConn) : 'No ID'}</p>*/}
+
+	</div>
+);
+}
+
+export default B;
