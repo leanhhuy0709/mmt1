@@ -7,9 +7,6 @@ const app = express();
 app.use(bodyParser.urlencoded({
   extended:true
 }));
-const { PeerServer } = require('peer');
-
-const peerServer = PeerServer({ port: 9000, path: '/myapp' });
 
 const users = [
   {
